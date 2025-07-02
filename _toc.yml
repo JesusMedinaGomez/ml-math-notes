@@ -8,4 +8,3 @@ chapters:
   sections:
     - file: LinearReg/slr
     - file: LinearReg/mlr
-    - file: LinearReg/bgd
