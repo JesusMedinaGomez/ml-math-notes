@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Gradient Descent &#8212; Machine Learning Math Book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=9831f624" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'LinearReg/sgd';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo1.png" class="logo__image only-light" alt="Machine Learning Math Book - Home"/>
+    <script>document.write(`<img src="../_static/logo1.png" class="logo__image only-dark" alt="Machine Learning Math Book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to My Machine Learning Math Book
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="intro.html">Linear Regression</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="slr.html">Simple Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mlr.html">Multiple Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/RegresionLineal.html">Regresión lineal con descenso de gradiente</a></li>
+
+
+
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FLinearReg/sgd.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/LinearReg/sgd.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Gradient Descent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-idea">Fundamental Idea</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-algorithm">Gradient Descent Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Gradient Descent Algorithm</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="gradient-descent">
+<h1>Gradient Descent<a class="headerlink" href="#gradient-descent" title="Link to this heading">#</a></h1>
+<p>As discussed earlier, our goal when training linear models is to find the parameter vector values <span class="math notranslate nohighlight">\( \theta \)</span> that minimize the cost function <span class="math notranslate nohighlight">\( J(\theta) \)</span>, which measures the discrepancy between the model predictions and the actual observed values.</p>
+<p>We have already seen that there are analytical formulas to obtain the optimal values of <span class="math notranslate nohighlight">\( \theta \)</span>, such as the normal equations. However, when the number of independent variables (<span class="math notranslate nohighlight">\( d \)</span>) or observations (<span class="math notranslate nohighlight">\( n \)</span>) is very large, these formulas become impractical or computationally expensive. Additionally, if some variables contribute little or no information to the model, manually tuning parameters can be inefficient.</p>
+<p>Fortunately, there is a very popular and effective optimization technique called <strong>gradient descent</strong>, which allows us to iteratively approximate the optimal values of <span class="math notranslate nohighlight">\( \theta \)</span> starting from an initial guess. This technique is particularly useful when working with large datasets or complex models.</p>
+<section id="fundamental-idea">
+<h2>Fundamental Idea<a class="headerlink" href="#fundamental-idea" title="Link to this heading">#</a></h2>
+<p>To understand how gradient descent works, we first need to grasp the meaning of the gradient vector of the cost function:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\theta} J(\theta)
+\]</div>
+<p>This vector indicates the direction in which <span class="math notranslate nohighlight">\( J(\theta) \)</span> increases most rapidly. Since we want to minimize <span class="math notranslate nohighlight">\( J \)</span>, we aim to move in the opposite direction. Therefore, we use the negative gradient:</p>
+<div class="math notranslate nohighlight">
+\[
+-\nabla_{\theta} J(\theta),
+\]</div>
+<p>which points towards the direction in which <span class="math notranslate nohighlight">\( J(\theta) \)</span> decreases most rapidly.</p>
+</section>
+<section id="gradient-descent-algorithm">
+<h2>Gradient Descent Algorithm<a class="headerlink" href="#gradient-descent-algorithm" title="Link to this heading">#</a></h2>
+<p>The process begins by choosing an initial value for the parameters, for example:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\theta^{(0)} =
+\begin{pmatrix}
+\theta_0^{(0)} \\
+\theta_1^{(0)} \\
+\vdots \\
+\theta_d^{(0)}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\text{random} \\
+\text{random} \\
+\vdots \\
+\text{random}
+\end{pmatrix}
+\end{split}\]</div>
+<p>Since these initial values are unlikely to represent a good solution, we will adjust them step by step in the direction of the minimum. For this purpose, we define a learning rate <span class="math notranslate nohighlight">\( \alpha &gt; 0 \)</span> (usually between 0.001 and 0.1), a small number that regulates the size of the steps we take.</p>
+<p>The parameter update in each iteration is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta^{(t+1)} = \theta^{(t)} - \alpha \nabla_{\theta} J(\theta^{(t)})
+\]</div>
+<p>This means that, at each step, we move in the direction of the negative gradient, scaled by <span class="math notranslate nohighlight">\( \alpha \)</span> to control the learning speed.</p>
+<p>Each component of the vector is updated as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_j^{(t+1)} = \theta_j^{(t)} - \alpha \frac{\partial J(\theta^{(t)})}{\partial \theta_j}
+\quad \text{for } j = 0, 1, \ldots, d
+\]</div>
+<p>where the denominator does not carry the superscript <span class="math notranslate nohighlight">\( t \)</span> because the derivative is taken with respect to <span class="math notranslate nohighlight">\( \theta_j \)</span> evaluated at <span class="math notranslate nohighlight">\( \theta^{(t)} \)</span>.</p>
+<p>By differentiating <span class="math notranslate nohighlight">\( J(\theta) \)</span> in the linear regression case, we obtain:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_j^{(t+1)} =
+\theta_j^{(t)} - \alpha \cdot \frac{1}{n}
+\sum_{i=1}^{n}
+\left( \hat{y}^{(i)} - y^{(i)} \right) x_j^{(i)}
+\quad \text{for } j = 0, 1, \ldots, d
+\]</div>
+<p>Repeating this process multiple times yields a sequence of vectors:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta^{(0)}, \quad \theta^{(1)}, \quad \theta^{(2)}, \quad \ldots
+\]</div>
+<p>that converge towards a minimum of <span class="math notranslate nohighlight">\( J(\theta) \)</span>.</p>
+<p>To simplify and speed up computation, we can express the update of all parameters simultaneously using matrix-vector notation:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta^{(t+1)} = \theta^{(t)} - \alpha \cdot \frac{1}{n} X^{T} \left( \hat{y} - y \right)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\( X \)</span> is the design matrix including all samples and features, <span class="math notranslate nohighlight">\( \hat{y} \)</span> is the vector of predictions, and <span class="math notranslate nohighlight">\( y \)</span> is the vector of actual values.</p>
+<p>This vectorized form is not only more compact and elegant but also computationally much more efficient than calculating each component separately in a loop. This is because matrix operations are highly optimized in numerical libraries and can take advantage of parallelism and cache memory, significantly reducing computation time, especially for large datasets.</p>
+<blockquote>
+<div><p><strong>How do we know when to stop?</strong></p>
+</div></blockquote>
+<p>There are several strategies to decide when to terminate gradient descent. Some of the most common are:</p>
+<ul>
+<li><p><strong>Fixed number of iterations:</strong> the algorithm runs for a predefined number of steps.</p></li>
+<li><p><strong>Minimal change:</strong> it stops when the change between two consecutive iterations of <span class="math notranslate nohighlight">\( J(\theta) \)</span> is smaller than a threshold <span class="math notranslate nohighlight">\( \epsilon \)</span>, i.e.:</p>
+<div class="math notranslate nohighlight">
+\[
+  |J(\theta^{(t+1)}) - J(\theta^{(t)})| &lt; \epsilon
+  \]</div>
+</li>
+<li><p><strong>Gradient norm:</strong> it stops when the magnitude of the gradient becomes very small, i.e.:</p>
+<div class="math notranslate nohighlight">
+\[
+  \| \nabla_{\theta} J(\theta^{(t)}) \| &lt; \epsilon
+  \]</div>
+</li>
+</ul>
+<blockquote>
+<div><p><strong>Note:</strong><br />
+The value of the learning rate <span class="math notranslate nohighlight">\( \alpha \)</span> is crucial. If it’s too small, the algorithm may take too long to converge. If it’s too large, it may cause oscillations or even divergence. Choosing <span class="math notranslate nohighlight">\( \alpha \)</span> appropriately is an important part of model design.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Observation:</strong><br />
+Gradient descent is the foundation of many machine learning algorithms, including training neural networks, and can be extended to more sophisticated versions such as stochastic gradient descent (SGD), mini-batch gradient descent, and adaptive methods like Adam or RMSprop.</p>
+</div></blockquote>
+</section>
+<section id="id1">
+<h2>Gradient Descent Algorithm<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>In this section, we’ll play a bit with notation. For some mathematicians, seeing expressions like:</p>
+<div class="math notranslate nohighlight">
+\[
+x = x + 1
+\]</div>
+<p>causes a mini heart attack. From a purely mathematical perspective, this might lead us to absurd conclusions such as <span class="math notranslate nohighlight">\( 0 = 1 \)</span>. However, in the realm of computing, this expression has a very different meaning. For example, in Python, we might write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>As long as a value has been previously defined for <code class="docutils literal notranslate"><span class="pre">x</span></code>, there’s no error. What happens in this code is simply an <strong>update</strong> of the value of <code class="docutils literal notranslate"><span class="pre">x</span></code>. In the first line, <code class="docutils literal notranslate"><span class="pre">x</span></code> equals 5, and in the second line it becomes <span class="math notranslate nohighlight">\( 5 + 1 = 6 \)</span>.</p>
+<p>This clarification is fundamental, as in mathematics we typically use notations like:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_i^{(t)}
+\]</div>
+<p>whereas in programming, more practical and operational notations are common. Therefore, throughout this document, expressions such as <span class="math notranslate nohighlight">\( x = x + 1 \)</span> will be perfectly valid and understood as updates of a variable’s value.</p>
+<p>The gradient descent algorithm starts from an initial value for the parameter vector, denoted as <span class="math notranslate nohighlight">\( \theta^{(0)} \)</span>, and updates it iteratively to minimize the cost function <span class="math notranslate nohighlight">\( J(\theta) \)</span>.</p>
+<p>To simplify notation, we work directly with a single vector <span class="math notranslate nohighlight">\( \theta \in \mathbb{R}^{(d+1) \times 1} \)</span>, whose components are <span class="math notranslate nohighlight">\( \theta_j \)</span>, with <span class="math notranslate nohighlight">\( j = 0, 1, \ldots, d \)</span>.</p>
+<p>The update rule for each component <span class="math notranslate nohighlight">\( \theta_j \)</span> is expressed as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_j =
+\theta_j - \alpha \cdot \frac{1}{n}
+\sum_{i=1}^{n}
+\left( \hat{y}^{(i)} - y^{(i)} \right) x_j^{(i)}
+\quad \text{for } j = 0, 1, \ldots, d.
+\]</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./LinearReg"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-idea">Fundamental Idea</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-algorithm">Gradient Descent Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Gradient Descent Algorithm</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jesús Medina
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

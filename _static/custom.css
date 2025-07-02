@@ -1,0 +1,15 @@
+/* Quitar ícono solo en admonitions con título "Definition (Hypothesis)" */
+.admonition > .admonition-title:has(strong:contains("Definition (Hypothesis)"))::before {
+  content: none !important;
+  display: none !important;
+}
+/* Quitar el ícono solo a admonitions con clase personalizada */
+.admonition.definition-box > .admonition-title::before {
+  content: none !important;
+  display: none !important;
+}
+/* Eliminar el ícono solo en admonitions con clase 'no-icon' */
+.admonition.no-icon > .admonition-title::before {
+    display: none !important;
+    content: none !important;
+}
